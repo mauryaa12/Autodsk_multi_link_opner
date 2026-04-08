@@ -70,6 +70,8 @@ async function runTest() {
 
 const report = document.getElementById('report');
 
+let issueCount = 0; // ✅ track issues
+
 for (const pageUrl of links) {
 
 const locale = getLocale(pageUrl);
@@ -85,6 +87,8 @@ if (!isAutodeskLink(link.href)) return;
 // ❌ Rule: link must contain same locale
 if (!link.href.includes(`/${locale}/`)) {
 
+issueCount++; // ✅ increment
+
 const row = document.createElement('tr');
 
 row.innerHTML = `
@@ -92,6 +96,25 @@ row.innerHTML = `
 <td><a href="${pageUrl}" target="_blank">Open</a></td>
 <td>${link.text}</td>
 <td>Locale mismatch (${locale} expected)</td>
+`;
+
+report.appendChild(row);
+
+}
+
+});
+
+}
+
+// ✅ If no issues found
+if (issueCount === 0) {
+
+const row = document.createElement('tr');
+
+row.innerHTML = `
+<td colspan="4" style="text-align:center; font-weight:bold; color:green;">
+✅ No hyperlink issue found
+</td>
 `;
 
 report.appendChild(row);
