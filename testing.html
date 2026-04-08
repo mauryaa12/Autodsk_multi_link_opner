@@ -1,1 +1,112 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Hyperlink Testing</title>
 
+<style>
+body { font-family: Arial; padding: 20px; background: #f4f6f8; }
+table { width: 100%; border-collapse: collapse; background: #fff; }
+th, td { border: 1px solid #ccc; padding: 8px; }
+th { background: #0078d4; color: white; }
+</style>
+</head>
+
+<body>
+
+<h2>Hyperlink Mismatch Report</h2>
+
+<table>
+<thead>
+<tr>
+<th>GUID</th>
+<th>Issue Page</th>
+<th>Anchor Text</th>
+<th>Issue Type</th>
+</tr>
+</thead>
+<tbody id="report"></tbody>
+</table>
+
+<script>
+
+const proxy = "https://api.allorigins.win/raw?url=";
+
+const links = JSON.parse(localStorage.getItem('testLinks') || "[]");
+
+if (!links.length) {
+alert("No links found");
+}
+
+// Extract locale from URL
+function getLocale(url) {
+const match = url.match(/\/([A-Z]{3})\/\?/);
+return match ? match[1] : null;
+}
+
+async function fetchHTML(url) {
+const res = await fetch(proxy + encodeURIComponent(url));
+return await res.text();
+}
+
+function extractLinks(html) {
+const doc = new DOMParser().parseFromString(html, 'text/html');
+
+return [...doc.querySelectorAll('a')]
+.map(a => ({
+text: a.innerText.trim(),
+href: a.href
+}))
+.filter(a => a.href.includes('autodesk.com'));
+}
+
+function isAutodeskLink(url) {
+return url.includes('help.autodesk.com') ||
+       url.includes('help-staging.autodesk.com') ||
+       url.includes('help-staging-beta.autodesk.com');
+}
+
+async function runTest() {
+
+const report = document.getElementById('report');
+
+for (const pageUrl of links) {
+
+const locale = getLocale(pageUrl);
+if (!locale) continue;
+
+const html = await fetchHTML(pageUrl);
+const pageLinks = extractLinks(html);
+
+pageLinks.forEach(link => {
+
+if (!isAutodeskLink(link.href)) return;
+
+// ❌ Rule: link must contain same locale
+if (!link.href.includes(`/${locale}/`)) {
+
+const row = document.createElement('tr');
+
+row.innerHTML = `
+<td>${new URL(pageUrl).searchParams.get('guid') || 'N/A'}</td>
+<td><a href="${pageUrl}" target="_blank">Open</a></td>
+<td>${link.text}</td>
+<td>Locale mismatch (${locale} expected)</td>
+`;
+
+report.appendChild(row);
+
+}
+
+});
+
+}
+
+}
+
+runTest();
+
+</script>
+
+</body>
+</html>
