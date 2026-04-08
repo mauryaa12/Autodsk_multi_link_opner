@@ -269,14 +269,16 @@ alert('No links built yet.');
 return;
 }
 
-// ✅ Save links for testing page
+// Save links
 localStorage.setItem('testLinks', JSON.stringify(links));
 
-// Open all pages
-links.forEach(link => window.open(link, '_blank'));
-
-// ✅ Open testing page
+// ✅ Open testing page FIRST (important)
 window.open('testing.html', '_blank');
+
+// Small delay helps popup handling
+setTimeout(() => {
+  links.forEach(link => window.open(link, '_blank'));
+}, 300);
 
 };
 
