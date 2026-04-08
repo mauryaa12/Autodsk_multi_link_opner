@@ -31,102 +31,106 @@ th { background: #0078d4; color: white; }
 <script>
 
 const proxy = "https://api.allorigins.win/raw?url=";
-
 const links = JSON.parse(localStorage.getItem('testLinks') || "[]");
 
+// Stop if no links
 if (!links.length) {
-alert("No links found");
+  alert("No links found");
 }
 
-// Extract locale from URL
+// Extract locale (ENU, CHS, DEU, etc.)
 function getLocale(url) {
-const match = url.match(/\/([A-Z]{3})\/\?/);
-return match ? match[1] : null;
+  const match = url.match(/\/([A-Z]{3})\/\?/);
+  return match ? match[1] : null;
 }
 
+// Fetch HTML via proxy
 async function fetchHTML(url) {
-const res = await fetch(proxy + encodeURIComponent(url));
-return await res.text();
+  try {
+    const res = await fetch(proxy + encodeURIComponent(url));
+    return await res.text();
+  } catch (err) {
+    console.error("Fetch failed:", url, err);
+    return "";
+  }
 }
 
+// Extract all <a> links
 function extractLinks(html) {
-const doc = new DOMParser().parseFromString(html, 'text/html');
+  const doc = new DOMParser().parseFromString(html, 'text/html');
 
-return [...doc.querySelectorAll('a')]
-.map(a => ({
-text: a.innerText.trim(),
-href: a.href
-}))
-.filter(a => a.href.includes('autodesk.com'));
+  return [...doc.querySelectorAll('a')]
+    .map(a => ({
+      text: a.innerText.trim(),
+      href: a.href
+    }))
+    .filter(a => a.href && a.href.includes('autodesk.com'));
 }
 
+// Check if Autodesk domain
 function isAutodeskLink(url) {
-return url.includes('help.autodesk.com') ||
-       url.includes('help-staging.autodesk.com') ||
-       url.includes('help-staging-beta.autodesk.com');
+  return url.includes('help.autodesk.com') ||
+         url.includes('help-staging.autodesk.com') ||
+         url.includes('help-staging-beta.autodesk.com');
 }
 
+// Main test function
 async function runTest() {
 
-const report = document.getElementById('report');
+  const report = document.getElementById('report');
+  let issueCount = 0;
 
-let issueCount = 0; // ✅ track issues
+  for (const pageUrl of links) {
 
-for (const pageUrl of links) {
+    const locale = getLocale(pageUrl);
+    if (!locale) continue;
 
-const locale = getLocale(pageUrl);
-if (!locale) continue;
+    const html = await fetchHTML(pageUrl);
+    if (!html) continue;
 
-const html = await fetchHTML(pageUrl);
-const pageLinks = extractLinks(html);
+    const pageLinks = extractLinks(html);
 
-pageLinks.forEach(link => {
+    pageLinks.forEach(link => {
 
-if (!isAutodeskLink(link.href)) return;
+      if (!isAutodeskLink(link.href)) return;
 
-// ❌ Rule: link must contain same locale
-if (!link.href.includes(`/${locale}/`)) {
+      // ❌ Rule: locale mismatch
+      if (!link.href.includes(`/${locale}/`)) {
 
-issueCount++; // ✅ increment
+        issueCount++;
 
-const row = document.createElement('tr');
+        const row = document.createElement('tr');
 
-row.innerHTML = `
-<td>${new URL(pageUrl).searchParams.get('guid') || 'N/A'}</td>
-<td><a href="${pageUrl}" target="_blank">Open</a></td>
-<td>${link.text}</td>
-<td>Locale mismatch (${locale} expected)</td>
-`;
+        row.innerHTML = `
+          <td>${new URL(pageUrl).searchParams.get('guid') || 'N/A'}</td>
+          <td><a href="${pageUrl}" target="_blank">Open</a></td>
+          <td>${link.text || '(no text)'}</td>
+          <td>Locale mismatch (${locale} expected)</td>
+        `;
 
-report.appendChild(row);
+        report.appendChild(row);
+      }
 
-}
+    });
 
-});
+  }
 
-}
+  // ✅ No issues found
+  if (issueCount === 0) {
+    const row = document.createElement('tr');
 
-// ✅ If no issues found
-if (issueCount === 0) {
+    row.innerHTML = `
+      <td colspan="4" style="text-align:center; font-weight:bold; color:green;">
+        ✅ No hyperlink issue found
+      </td>
+    `;
 
-const row = document.createElement('tr');
-
-row.innerHTML = `
-<td colspan="4" style="text-align:center; font-weight:bold; color:green;">
-✅ No hyperlink issue found
-</td>
-`;
-
-report.appendChild(row);
-
-}
-
-});
+    report.appendChild(row);
+  }
 
 }
 
-}
-
+// Run test
 runTest();
 
 </script>
