@@ -260,17 +260,25 @@ document.getElementById('buildProduction')
 document.getElementById('buildBeta')
 .onclick = () => buildLinks('https://help-staging-beta.autodesk.com');
 
-document.getElementById('openAllBtn')
-.onclick = () => {
+document.getElementById('openAllBtn').onclick = () => {
 
-const links = document.querySelectorAll('#linksList a');
+const links = [...document.querySelectorAll('#linksList a')].map(a => a.href);
 
 if (!links.length) {
-
 alert('No links built yet.');
 return;
-
 }
+
+// ✅ Save links for testing page
+localStorage.setItem('testLinks', JSON.stringify(links));
+
+// Open all pages
+links.forEach(link => window.open(link, '_blank'));
+
+// ✅ Open testing page
+window.open('testing.html', '_blank');
+
+};
 
 links.forEach(a => a.click());
 
