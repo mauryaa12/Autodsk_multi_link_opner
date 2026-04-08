@@ -1,1 +1,2 @@
-# Autodsk_multi_link_opner
+# ADSK_Testing_Assistant
+This is a repo for multi language link opener for Autodesk Products.

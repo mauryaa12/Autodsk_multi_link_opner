@@ -1,0 +1,140 @@
+[
+  {
+    "code": "CONNECT",
+    "name": "Autodesk Connect",
+    "languages": ["CHS", "CHT", "CSY", "DEU", "ESP", "FRA", "HUN", "ITA", "JPN", "KOR", "PLK", "PTB", "RUS"],
+    "usesYearBranch": false
+  },
+  {
+    "code": "PLM",
+    "name": "Autodesk Fusion Manage",
+    "languages": ["CHS", "CSY", "DEU", "FRA", "ITA", "JPN", "KOR"],
+    "usesYearBranch": false
+  },
+  {
+    "code": "NINCAD",
+    "name": "Autodesk NINCAD",
+    "languages": ["CHS", "CHT", "DEU", "FRA", "ITA", "JPN", "KOR"],
+    "usesYearBranch": true
+  },
+  {
+  "code": "INVNTOR",
+  "name": "Autodesk Inventor",
+  "languages": ["CHS", "CHT", "CSY", "DEU", "ESP", "FRA", "ITA", "JPN", "KOR", "PLK", "PTB", "RUS"],
+  "usesYearBranch": true
+  },
+  {
+  "code": "TNNUINV",
+  "name": "Autodesk Inventor Nesting",
+  "languages": ["CHS", "DEU", "ESP", "FRA", "ITA", "JPN"],
+  "usesYearBranch": false
+  },
+  {
+    "code": "ACMPAN",
+    "name": "Autodesk Helius CDX",
+    "languages": ["CHS", "JPN", "DEU"],
+    "usesYearBranch": true
+  },
+  {
+    "code": "SCM",
+    "name": "AUTODESK SCM",
+    "languages": ["CHS", "CHT", "JPN", "KOR", "DEU", "FRA", "ESP", "RUS", "PTG", "ITA"],
+    "usesYearBranch": false
+  },
+  {
+    "code": "DATAGR",
+    "name": "AUTODESK DATUM-360",
+    "languages": ["ENG", "DEU", "FRA", "ESP", "FRC", "JPN", "CHS", "DAN", "NLD", "SWE"],
+    "usesYearBranch": false
+  },
+  {
+  "code": "COORD",
+  "name": "AUTODESK CONSTRUCTION CLOUD (ACC)",
+  "languages": ["DEU", "JPN", "FRA", "ESP", "NLD", "FRC", "ENG", "CHS", "CHT", "DAN", "SWE", "KOR", "ITA", "NOR"],
+  "usesYearBranch": false
+},
+   {
+  "code": "COLLAB",
+  "name": "AUTODESK DESIGN COLLABARATION (ACC)",
+  "languages": ["DEU", "JPN", "FRA", "ESP", "NLD", "FRC", "ENG", "CHS", "CHT", "DAN", "SWE", "KOR", "ITA", "NOR"],
+  "usesYearBranch": false
+},
+{
+  "code": "DOCS",
+  "name": "Autodesk Docs (ACC)",
+  "languages": ["DEU", "JPN", "FRA", "ESP", "NLD", "FRC", "ENG", "CHS", "CHT", "DAN", "SWE", "KOR", "ITA", "NOR"],
+  "usesYearBranch": false
+},
+  {
+    "code": "MFIA",
+    "name": "Moldflow Insight",
+    "languages": ["CHS", "CHT", "JPN", "KOR"],
+    "usesYearBranch": true
+  },
+  {
+    "code": "MFAA",
+    "name": "Moldflow Advisor",
+    "languages": ["CHS", "CHT", "DEU", "FRA", "ESP", "JPN", "KOR", "PTG"],
+    "usesYearBranch": true
+  }, 
+   {
+    "code": "MFC",
+    "name": "Moldflow Communicator",
+    "languages": ["CHS", "CHT", "JPN", "KOR"],
+    "usesYearBranch": true
+  },
+  {
+    "code": "TANDEM",
+    "name": "Autodesk Tandem",
+    "languages": ["JPN", "KOR", "FRA", "DEU", "ESP"],
+    "usesYearBranch": false
+  },
+  {
+    "code": "VEHTRK",
+    "name": "Autodesk Vehicle Tracking",
+    "languages": ["DEU", "JPN", "CHS", "FRA", "ITA", "ESP", "ENG", "CHT", "KOR", "RUS", "CSY", "PLK", "PTB", "HUN"],
+    "usesYearBranch": true
+  },
+  {
+    "code": "CIV3D",
+    "name": "Civil 3D",
+    "languages": ["CSY", "CHS", "CHT", "DEU", "ENG", "ESP", "FRA", "HUN", "ITA", "JPN", "KOR", "PLK", "PTB", "RUS"],
+    "usesYearBranch": true
+  },
+  {
+    "code": "C3DGO",
+    "name": "Grading Optimization",
+    "languages": ["CSY", "CHS", "CHT", "DEU", "ENG", "ESP", "FRA", "HUN", "ITA", "JPN", "KOR", "PLK", "PTB", "RUS"],
+    "usesYearBranch": false
+  },
+  {
+    "code": "INFDS",
+    "name": "InfoDrainage",
+    "languages": ["DEU", "ENG", "ESP", "FRA", "JPN"],
+    "usesYearBranch": false
+  },
+  {
+    "code": "IWICMS",
+    "name": "InfoWorks ICM",
+    "languages": ["DEU", "ESP", "FRA", "ITA", "JPN"],
+    "usesYearBranch": true
+  },
+  {
+    "code": "IWWSPRO",
+    "name": "InfoWorks Pro",
+    "languages": ["DEU", "ESP", "FRA", "ITA", "JPN"],
+    "usesYearBranch": true
+  },
+  {
+    "code": "INFMDR",
+    "name": "InfraWorks",
+    "languages": ["JPN", "DEU", "FRA", "CHS", "ITA", "ESP", "RUS", "ENG", "PTB"],
+    "usesYearBranch": false
+  },
+  {
+    "code": "RECAP",
+    "name": "ReCap",
+    "languages": ["CHS", "CHT", "CSY", "DEU", "ESP", "FRA", "ITA", "JPN", "KOR", "PLK", "PTB"],
+    "usesYearBranch": false
+  }
+]

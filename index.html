@@ -1,0 +1,282 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Autodesk — Multi-Language Link Opener</title>
+
+<style>
+body { font-family: Arial, sans-serif; margin: 20px; background: #f4f6f8; }
+.container { max-width: 900px; margin: auto; background: #fff; padding: 20px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+h2 { color: #0078d4; }
+label { display: block; margin-top: 15px; font-weight: bold; }
+input, select { width: 100%; padding: 8px; margin-top: 5px; border-radius: 6px; border: 1px solid #ccc; }
+button { padding: 8px 14px; border: none; background: #0078d4; color: white; font-weight: bold; border-radius: 6px; margin-top: 10px; cursor: pointer; }
+button.secondary { background: #e5f0fa; color: #0078d4; border: 1px solid #0078d4; }
+.button-row { display: flex; gap: 10px; flex-wrap: wrap; }
+ul { margin-top: 10px; }
+a { display: block; margin: 5px 0; color: #0b5394; text-decoration: none; word-break: break-all; }
+#yearContainer, #manualContainer { display: none; }
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<h2>Autodesk — Multi-Language Link Opener</h2>
+
+<label>Product</label>
+<select id="productSelect">
+<option value="">-- Select Product or Other --</option>
+</select>
+
+<div id="yearContainer">
+<label>Release Year</label>
+<select id="yearSelect"></select>
+</div>
+
+<div id="manualContainer">
+<label>Or Enter Manual Staging Link / Product Name</label>
+<input id="manualInput">
+</div>
+
+<label>GUID (optional for homepage)</label>
+<input id="guidInput">
+
+<label>Target Languages</label>
+<input id="langsInput">
+
+<div class="button-row">
+<button id="buildStaging">Build Staging Link</button>
+<button id="buildProduction">Build Production Link</button>
+<button id="buildBeta">Build Beta-Staging Link</button>
+</div>
+
+<button id="openAllBtn" class="secondary">Open All</button>
+
+<p id="status"></p>
+<ul id="linksList"></ul>
+
+</div>
+
+<script>
+
+let productsData = [];
+
+const productSelect = document.getElementById('productSelect');
+const yearSelect = document.getElementById('yearSelect');
+const yearContainer = document.getElementById('yearContainer');
+const manualContainer = document.getElementById('manualContainer');
+const manualInput = document.getElementById('manualInput');
+const guidInput = document.getElementById('guidInput');
+const langsInput = document.getElementById('langsInput');
+const linksList = document.getElementById('linksList');
+const status = document.getElementById('status');
+
+fetch('./products.json')
+.then(r => r.json())
+.then(data => {
+productsData = data;
+populateProducts();
+populateYears();
+});
+
+function populateProducts() {
+
+// Add OTHER option first
+const otherOpt = document.createElement('option');
+otherOpt.value = 'OTHER';
+otherOpt.textContent = 'Other Product (Manual Entry)';
+productSelect.appendChild(otherOpt);
+
+// Sort products alphabetically
+productsData.sort((a, b) => a.code.localeCompare(b.code));
+
+// Add sorted products
+productsData.forEach(p => {
+const opt = document.createElement('option');
+opt.value = p.code;
+opt.textContent = `${p.code} — ${p.name}`;
+opt.dataset.usesYearBranch = p.usesYearBranch;
+productSelect.appendChild(opt);
+});
+
+}
+
+function populateYears() {
+
+for (let y = 2055; y >= 1990; y--) {
+
+const opt = document.createElement('option');
+opt.value = y;
+opt.textContent = y;
+
+if (y === 2027) opt.selected = true;
+
+yearSelect.appendChild(opt);
+
+}
+
+}
+
+productSelect.addEventListener('change', () => {
+
+const selected = productSelect.selectedOptions[0];
+const usesYear = selected.dataset.usesYearBranch === 'true';
+const isOther = selected.value === 'OTHER';
+
+yearContainer.style.display = usesYear ? 'block' : 'none';
+manualContainer.style.display = isOther ? 'block' : 'none';
+
+const product = productsData.find(p => p.code === productSelect.value);
+
+if (product && product.languages) {
+langsInput.value = product.languages.join(',');
+}
+
+});
+
+function buildLinks(domain) {
+
+linksList.innerHTML = '';
+status.textContent = '';
+
+const productCode = productSelect.value;
+const manual = manualInput.value.trim();
+const guid = guidInput.value.trim();
+const langs = langsInput.value.trim();
+
+const langList = langs.split(',').map(l => l.trim().toUpperCase()).filter(Boolean);
+
+let baseUrl = '';
+let year = null;
+
+if (productCode && productCode !== 'OTHER') {
+
+const selected = productSelect.selectedOptions[0];
+const usesYear = selected.dataset.usesYearBranch === 'true';
+
+baseUrl = `${domain}/view/${productCode}`;
+
+if (usesYear) year = yearSelect.value || '2027';
+
+} else if (manual) {
+
+const info = analyzeManual(manual, domain);
+
+if (!info) return alert('Invalid manual input');
+
+baseUrl = info.baseUrl;
+year = info.year;
+
+} else {
+
+return alert('Select product or enter manual link');
+
+}
+
+const urls = buildUrls(baseUrl, langList, guid, year);
+
+urls.forEach(url => {
+
+const li = document.createElement('li');
+const a = document.createElement('a');
+
+a.href = url;
+a.target = '_blank';
+a.textContent = url;
+
+li.appendChild(a);
+linksList.appendChild(li);
+
+});
+
+status.textContent = `Built ${urls.length} links successfully.`;
+
+}
+
+function buildUrls(baseUrl, langs, guid, year) {
+
+baseUrl = baseUrl.replace(/\/+$/, '');
+
+return langs.map(lang => {
+
+if (guid) {
+
+return year
+? `${baseUrl}/${year}/${lang}/?guid=${encodeURIComponent(guid)}`
+: `${baseUrl}/${lang}/?guid=${encodeURIComponent(guid)}`;
+
+}
+
+return year
+? `${baseUrl}/${year}/${lang}/`
+: `${baseUrl}/${lang}/`;
+
+});
+
+}
+
+function analyzeManual(input, domain) {
+
+try {
+
+const u = new URL(input);
+const parts = u.pathname.split('/').filter(Boolean);
+
+const viewIdx = parts.indexOf('view');
+
+if (viewIdx === -1) return null;
+
+const afterView = parts.slice(viewIdx + 1);
+
+const product = afterView[0];
+const year = /^\d{4}$/.test(afterView[1]) ? afterView[1] : null;
+
+return { baseUrl: `${domain}/view/${product}`, year };
+
+}
+
+catch {
+
+if (/^[A-Z0-9]+$/i.test(input)) {
+
+return { baseUrl: `${domain}/view/${input}`, year: null };
+
+}
+
+return null;
+
+}
+
+}
+
+document.getElementById('buildStaging')
+.onclick = () => buildLinks('https://help-staging.autodesk.com');
+
+document.getElementById('buildProduction')
+.onclick = () => buildLinks('https://help.autodesk.com');
+
+document.getElementById('buildBeta')
+.onclick = () => buildLinks('https://help-staging-beta.autodesk.com');
+
+document.getElementById('openAllBtn')
+.onclick = () => {
+
+const links = document.querySelectorAll('#linksList a');
+
+if (!links.length) {
+
+alert('No links built yet.');
+return;
+
+}
+
+links.forEach(a => a.click());
+
+};
+
+</script>
+
+</body>
+</html>
